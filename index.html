@@ -1,0 +1,188 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portafolio de Diseñador Gráfico</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in {
+      animation: fadeIn 1s ease-out forwards;
+    }
+    .hover-scale { transition: transform 0.3s ease; }
+    .hover-scale:hover { transform: scale(1.05); }
+  </style>
+</head>
+<body class="bg-gray-900 text-white font-sans">
+  <!-- Navbar -->
+  <nav class="fixed top-0 w-full bg-gray-900/80 backdrop-blur-md z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-teal-400">Juan Pérez</h1>
+      <ul class="flex space-x-6">
+        <li><a href="#home" class="hover:text-teal-400 transition-colors">Inicio</a></li>
+        <li><a href="#about" class="hover:text-teal-400 transition-colors">Sobre Mí</a></li>
+        <li><a href="#portfolio" class="hover:text-teal-400 transition-colors">Portafolio</a></li>
+        <li><a href="#services" class="hover:text-teal-400 transition-colors">Servicios</a></li>
+        <li><a href="#contact" class="hover:text-teal-400 transition-colors">Contacto</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="home" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
+    <div class="text-center px-4">
+      <h2 class="text-5xl md:text-7xl font-extrabold mb-4 fade-in">Diseño que Inspira</h2>
+      <p class="text-lg md:text-xl text-gray-300 mb-6 fade-in" style="animation-delay: 0.2s;">
+        Creando experiencias visuales impactantes para marcas modernas.
+      </p>
+      <a href="#portfolio" class="inline-block bg-teal-400 text-gray-900 px-6 py-3 rounded-full font-semibold hover:bg-teal-500 transition-colors fade-in" style="animation-delay: 0.4s;">
+        Ver Portafolio
+      </a>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="py-20 bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-4xl font-bold text-center mb-12 fade-in">Sobre Mí</h2>
+      <div class="flex flex-col md:flex-row items-center gap-8">
+        <img src="https://via.placeholder.com/300" alt="Juan Pérez" class="w-64 h-64 rounded-full object-cover fade-in">
+        <div class="text-gray-300 fade-in" style="animation-delay: 0.2s;">
+          <p class="text-lg mb-4">
+            Soy Juan Pérez, un diseñador gráfico apasionado con más de 10 años de experiencia creando identidades visuales únicas para marcas globales.
+          </p>
+          <p class="text-lg">
+            Mi enfoque combina creatividad, estrategia y atención al detalle, transformando ideas en diseños que conectan y emocionan.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Portfolio Section -->
+  <section id="portfolio" class="py-20 bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-4xl font-bold text-center mb-12 fade-in">Portafolio</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="relative overflow-hidden rounded-lg hover-scale fade-in">
+          <img src="https://via.placeholder.com/400x300" alt="Proyecto 1" class="w-full h-64 object-cover">
+          <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+            <p class="text-white font-semibold">Branding para Startup</p>
+          </div>
+        </div>
+        <div class="relative overflow-hidden rounded-lg hover-scale fade-in" style="animation-delay: 0.2s;">
+          <img src="https://via.placeholder.com/400x300" alt="Proyecto 2" class="w-full h-64 object-cover">
+          <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+            <p class="text-white font-semibold">Diseño de Empaque</p>
+          </div>
+        </div>
+        <div class="relative overflow-hidden rounded-lg hover-scale fade-in" style="animation-delay: 0.4s;">
+          <img src="https://via.placeholder.com/400x300" alt="Proyecto 3" class="w-full h-64 object-cover">
+          <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+            <p class="text-white font-semibold">Campaña Publicitaria</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section id="services" class="py-20 bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-4xl font-bold text-center mb-12 fade-in">Servicios</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="p-6 bg-gray-700 rounded-lg text-center fade-in">
+          <h3 class="text-xl font-semibold mb-4">Branding</h3>
+          <p class="text-gray-300">Creación de identidades visuales que reflejan la esencia de tu marca.</p>
+        </div>
+        <div class="p-6 bg-gray-700 rounded-lg text-center fade-in" style="animation-delay: 0.2s;">
+          <h3 class="text-xl font-semibold mb-4">Diseño Web</h3>
+          <p class="text-gray-300">Diseños web responsivos y funcionales para una presencia digital impactante.</p>
+        </div>
+        <div class="p-6 bg-gray-700 rounded-lg text-center fade-in" style="animation-delay: 0.4s;">
+          <h3 class="text-xl font-semibold mb-4">Ilustración</h3>
+          <p class="text-gray-300">Ilustraciones personalizadas que dan vida a tus ideas creativas.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="py-20 bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-4xl font-bold text-center mb-12 fade-in">Contacto</h2>
+      <div class="max-w-lg mx-auto text-center">
+        <p class="text-gray-300 mb-6 fade-in">¿Listo para llevar tu marca al siguiente nivel? ¡Hablemos!</p>
+        <div class="space-y-4">
+          <input type="text" placeholder="Nombre" class="w-full p-3 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400 fade-in" style="animation-delay: 0.2s;">
+          <input type="email" placeholder="Correo Electrónico" class="w-full p-3 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400 fade-in" style="animation-delay: 0.3s;">
+          <textarea placeholder="Mensaje" class="w-full p-3 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400 fade-in" style="animation-delay: 0.4s;" rows="5"></textarea>
+          <button class="w-full bg-teal-400 text-gray-900 px-6 py-3 rounded-lg font-semibold hover:bg-teal-500 transition-colors fade-in" style="animation-delay: 0.5s;">
+            Enviar Mensaje
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-6 bg-gray-800 text-center">
+    <p class="text-gray-300">&copy; 2025 Juan Pérez. Todos los derechos reservados.</p>
+  </footer>
+
+  <!-- Smooth Scroll Script -->
+  <script>
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+  </script>
+</body>
+</html>
